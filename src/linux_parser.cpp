@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "linux_parser.h"
 
@@ -117,25 +118,23 @@ long LinuxParser::Jiffies() {
 vector<std::string> LinuxParser::ProcessStat(int pid) {
   vector<string> process_stat;
   string line, value;
-  std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
-  if (filestream.is_open()) {
-    try
-    {
+  try {
+    std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
+    if (filestream.is_open()) {    
       while(std::getline(filestream, line)) {
         std::istringstream linestream(line);       
-          while(linestream >> value) {
-            process_stat.push_back(value);
-          }    
+        while(linestream >> value) {
+          process_stat.push_back(value);
+        }    
       } 
+      return process_stat;
     }
-    catch(const std::exception& e)
-    {
-      //std::cerr << e.what() << '\n';
-    }
-    
-      
   }
-  return process_stat;
+  catch(const std::exception& e)
+  {
+    std::cerr << e.what() << '\n';
+    return process_stat;
+  }  
 }
 
 // TODO: Read and return the number of active jiffies for a PID
