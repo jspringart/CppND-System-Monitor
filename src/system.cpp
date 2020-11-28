@@ -18,7 +18,28 @@ using std::vector;
 Processor& System::Cpu() { return cpu_; }
 
 // TODO: Return a container composed of the system's processes
-vector<Process>& System::Processes() { return processes_; }
+vector<Process>& System::Processes() {
+    processes_.clear();
+    for(int pid : LinuxParser::Pids()) {
+        Process newProcess{pid};
+        //vector<Process>::iterator foundProcess = std::find(processes_.begin(), processes_.end(), newProcess);
+        newProcess.CpuUtilization();
+        newProcess.UpTime();
+        processes_.push_back(newProcess);
+
+        // if(foundProcess == processes_.end()){
+        //     newProcess.CpuUtilization();
+        //     newProcess.UpTime();
+        //     processes_.push_back(newProcess);
+        // }
+        // else {
+        //     foundProcess->CpuUtilization();
+        //     foundProcess->UpTime();  
+        // }                      
+    }
+    sort(processes_.begin(), processes_.end());
+    return processes_; 
+}
 
 // TODO: Return the system's kernel identifier (string)
 std::string System::Kernel() { 
@@ -26,7 +47,9 @@ std::string System::Kernel() {
 }
 
 // TODO: Return the system's memory utilization
-float System::MemoryUtilization() { return 0.0; }
+float System::MemoryUtilization() { 
+    return LinuxParser::MemoryUtilization();
+}
 
 // TODO: Return the operating system name
 std::string System::OperatingSystem() { 
