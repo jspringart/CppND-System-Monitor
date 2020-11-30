@@ -113,10 +113,10 @@ long LinuxParser::Jiffies() {
 }
 
 vector<std::string> LinuxParser::ProcessStat(int pid) {
-  vector<string> process_stat = {};
-  string line, value;
-  try {
-    std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
+  vector<string> process_stat{};
+  string line, value;  
+  try { 
+    std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);   
     if (filestream.is_open()) {    
       while(std::getline(filestream, line)) {
         std::istringstream linestream(line);       
@@ -129,7 +129,6 @@ vector<std::string> LinuxParser::ProcessStat(int pid) {
   catch(const std::exception& e)
   {
     std::cerr << e.what() << '\n';
-    return process_stat;
   }
   return process_stat;  
 }
@@ -266,6 +265,6 @@ string LinuxParser::User(int pid) {
 }
 
 long LinuxParser::UpTime(int pid) { 
-  long starttime = stol(ProcessStat(pid)[kStarttime]) / sysconf(_SC_CLK_TCK);
+  long starttime = (stol(ProcessStat(pid)[kStarttime]) / sysconf(_SC_CLK_TCK));
   return starttime; 
 }
