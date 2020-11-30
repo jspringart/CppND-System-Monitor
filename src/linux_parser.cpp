@@ -113,7 +113,7 @@ long LinuxParser::Jiffies() {
 }
 
 vector<std::string> LinuxParser::ProcessStat(int pid) {
-  vector<string> process_stat;
+  vector<string> process_stat = {};
   string line, value;
   try {
     std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
@@ -123,15 +123,15 @@ vector<std::string> LinuxParser::ProcessStat(int pid) {
         while(linestream >> value) {
           process_stat.push_back(value);
         }    
-      } 
-      return process_stat;
+      }      
     }
   }
   catch(const std::exception& e)
   {
     std::cerr << e.what() << '\n';
     return process_stat;
-  }  
+  }
+  return process_stat;  
 }
 
 long LinuxParser::ActiveJiffies(int pid) { 
