@@ -129,19 +129,23 @@ vector<std::string> LinuxParser::ProcessStat(int pid) {
   catch(const std::exception& e)
   {
     std::cerr << e.what() << '\n';
+    return vector<string>{};
   }
   return process_stat;  
 }
 
 long LinuxParser::ActiveJiffies(int pid) { 
-  long utime = stol(ProcessStat(pid)[kUtime]); 
-  long stime = stol(ProcessStat(pid)[kStime]);
-  long cutime = stol(ProcessStat(pid)[kCutime]);
-  long cstime = stol(ProcessStat(pid)[kCstime]);
+  long utime{0}, stime{0}, cutime{0}, cstime{0}, total_time{0};
+  vector<string> stat = ProcessStat(pid);
+  if(stat.size() > 0) {
+    utime = stol(stat[kUtime]); 
+    stime = stol(stat[kStime]);
+    cutime = stol(stat[kCutime]);
+    cstime = stol(stat[kCstime]);
+  }   
 
-  long total_time = utime + stime + cutime + cstime;
+  total_time = utime + stime + cutime + cstime; 
   return total_time;
-
 }
 
 long LinuxParser::ActiveJiffies() { 
@@ -265,6 +269,10 @@ string LinuxParser::User(int pid) {
 }
 
 long LinuxParser::UpTime(int pid) { 
-  long starttime = (stol(ProcessStat(pid)[kStarttime]) / sysconf(_SC_CLK_TCK));
+  vector<string> stat = ProcessStat(pid);
+  long starttime{0};
+  if(stat.size() > 0) {
+    starttime = (stol(stat[kStarttime]) / sysconf(_SC_CLK_TCK));
+  }  
   return starttime; 
 }

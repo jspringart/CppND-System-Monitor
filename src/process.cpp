@@ -17,10 +17,17 @@ Process::Process(int pid) : pid_(pid), user_(LinuxParser::User(pid_)), cmd_(Linu
 int Process::Pid() { return pid_; }
 
 float Process::CpuUtilization() {
-    int hertz = sysconf(_SC_CLK_TCK);
-    total = (float)LinuxParser::ActiveJiffies(pid_) / (float)hertz;    
-    seconds = (float)UpTime();  
-    cpu_ = (float)total / (float)seconds;
+    int const hertz = sysconf(_SC_CLK_TCK);
+    long const active_jiffies = LinuxParser::ActiveJiffies(pid_);
+    if(active_jiffies != 0) {
+        total = static_cast<float>(active_jiffies) / static_cast<float>(hertz);  
+    }
+    else {
+        return 0.0;
+    }
+      
+    seconds = static_cast<float>(UpTime());  
+    cpu_ = total / seconds;
     
     return cpu_;
 }
@@ -32,8 +39,8 @@ string Process::Ram() { return to_string(stol(ram_) / 1000); }
 string Process::User() { return user_; }
 
 long int Process::UpTime() { 
-    long total_uptime = LinuxParser::UpTime();
-    long local_uptime = LinuxParser::UpTime(pid_);
+    long const total_uptime = LinuxParser::UpTime();
+    long const local_uptime = LinuxParser::UpTime(pid_);
     return (long)(total_uptime - local_uptime); 
 }
 

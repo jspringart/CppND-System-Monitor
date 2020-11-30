@@ -8,6 +8,6 @@ float Processor::Utilization() {
     idle = LinuxParser::IdleJiffies();
     prevTotal = total;
     total = LinuxParser::Jiffies();
-    float util_percentage = ((float)active - (float)prevActive) / ((float)total - (float)prevTotal);
+    float const util_percentage = static_cast<float>(active - prevActive) / static_cast<float>(total - prevTotal);
     return util_percentage; 
 }
